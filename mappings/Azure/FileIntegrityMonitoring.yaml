@@ -1,12 +1,11 @@
-version: 1.0
-ATT&CK version: 8.1
-date: 1/21/2021
+version: '1.0'
+ATT&CK version: '8.1'
+creation date: 1/21/2021
 name: File Integrity Monitoring
-author: 
 contact: ctid@mitre-engenuity.org
 organization: Center for Threat Informed Defense (CTID)
 platform: Azure
-tags: 
+tags:
   - Azure Security Center
   - Azure Defender for Servers
   - File system
@@ -14,19 +13,18 @@ tags:
   - Windows
   - Linux
 description: >
-  File integrity monitoring (FIM), also known as change monitoring, examines 
-  operating system files, Windows registries, application software, Linux 
-  system files, and more, for changes that might indicate an attack.
-  File Integrity Monitoring (FIM) informs you when changes occur to sensitive 
-  areas in your resources, so you can investigate and address unauthorized 
-  activity. 
+  File integrity monitoring (FIM), also known as change monitoring, examines  operating system
+  files, Windows registries, application software, Linux  system files, and more, for changes that
+  might indicate an attack. File Integrity Monitoring (FIM) informs you when changes occur to
+  sensitive  areas in your resources, so you can investigate and address unauthorized  activity. 
 techniques:
   - id: T1053
     name: Scheduled Task/Job
-    scores:
+    technique-scores:
       - category: Detect
-        value: Partial
-        sub-techniques:
+        value: Significant
+    sub-techniques-scores:
+      - sub-techniques:
           - id: T1053.001
             name: At (Linux)
           - id: T1053.002
@@ -37,28 +35,28 @@ techniques:
             name: Scheduled Tasks
           - id: T1053.006
             name: Systemd Timers
-        comment: >
-            These techniques result in Windows Registry or file system artifacts
-            being created or modified which can be detected by this control.
-            T1053.004 Launchd was excluded because this control does not support
-            the MacOS operating system.
+        scores:
+          - category: Detect
+            value: Significant
   - id: T1098
     name: Account Manipulation
-    sub-techniques: 
-      - id: T1098.004
-        name: SSH Authorized Keys
-        scores: 
-          - function: Detect
-            value: Partial
-            comment: >
-              The authorized_keys file can be monitored for modification to 
-              detect an attempt by an adversary to maintain access to an account.
+    technique-scores:
+      - category: Detect
+        value: Minimal
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1098.004
+            name: SSH Authorized Keys
+        scores:
+          - category: Detect
+            value: Significant
   - id: T1547
     name: Boot or Logon Autostart Execution
-    scores:
+    technique-scores:
       - category: Detect
-        value: Partial
-        sub-techniques:
+        value: Significant
+    sub-techniques-scores:
+      - sub-techniques:
           - id: T1547.001
             name: Registry Run Keys / Startup Folder
           - id: T1547.002
@@ -79,65 +77,149 @@ techniques:
             name: Port Monitors
           - id: T1547.012
             name: Print Processors
-        comment: >
-            These techniques result in Windows Registry or file system artifacts
-            being created or modified which can be detected by this control.
-            T1053.007 Re-opened Applications and T1053.011 Plist Modification were excluded 
-            because this control does not support the MacOS operating system.
+        scores:
+          - category: Detect
+            value: Significant
   - id: T1037
     name: Boot or Logon Initialization Scripts
-    scores:
+    technique-scores:
       - category: Detect
-        value: Partial
-        sub-techniques:
+        value: Significant
+    sub-techniques-scores:
+      - sub-techniques:
           - id: T1037.001
             name: Logon Script (Windows)
           - id: T1037.003
             name: Network Logon Script
-        comment: >
-            These techniques result in Windows Registry or file system artifacts
-            being created or modified which can be detected by this control.  Other sub-techniques
-            were excluded because the were specific to the MacOS operating system.
-    sub-techniques: 
-      - id: T1037.001
-        name: Logon Script (Windows)
-        scores: 
-          - function: Detect
-            value: Partial
-            comment: >
-              This control can be used to monitor changes to the registry key 
-              related to Logon scripts.  This monitoring may lead to false
-              positives.
-      - id: T1037.002
-        name: Logon Script (Mac)
-        scores: 
-          - function: Detect
-            value: Partial
-            comment: >
-              It appears that configuration for login hooks is stored in the 
-              /var/root/Library/Preferences/com.apple.loginwindow preferences 
-              file and therefore this control can be used to monitor this file 
-              for changes.
-      - id: T1037.004
-        name: Rc.common
-        scores: 
-          - function: Detect
-            value: Partial
-            comment: >
-              This control can be used to monitor changes to this file.
-      - id: T1037.005
-        name: Startup Items
-        scores: 
-          - function: Detect
+        scores:
+          - category: Detect
             value: Significant
+  - id: T1543
+    name: Create or Modify System Process
+    technique-scores:
+      - category: Detect
+        value: Significant
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1543.002
+            name: Systemd Service
+          - id: T1037.003
+            name: Windows Service
+        scores:
+          - category: Detect
+            value: Significant
+  - id: T1546
+    name: Event Triggered Execution
+    technique-scores:
+      - category: Detect
+        value: Partial
+        comment: >
+          The detection score for this technique was assessed as Partial because it doesn't
+          detect some of the sub-techniques of this technique such as Windows Management
+          Instrumentation Event Subscription (WMI) and Trap sub-techniques.  Additionally for 
+          some sub-techniques, this control can be noisy.
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1546.001
+            name: Change Default File Association
+          - id: T1546.002
+            name: Screensaver
+          - id: T1546.004
+            name: .bash_profile and .bashrc
+          - id: T1546.007
+            name: Netsh Helper DLL
+          - id: T1546.008
+            name: Accessibility Features
+          - id: T1546.009
+            name: AppCert DLLs
+          - id: T1546.011
+            name: Application Shimming
+          - id: T1546.012
+            name: Image File Execution Options Injection
+          - id: T1546.013
+            name: PowerShell Profile
+        scores:
+          - category: Detect
+            value: Significant
+      - sub-techniques:
+          - id: T1546.010
+            name: AppInit DLLs
+          - id: T1546.015
+            name: Component Object Model Hijacking
+        scores:
+          - category: Detect
+            value: Minimal
             comment: >
-              This control can be used to monitor the /Library/StartupItems
-              for changes. Changes to this folder should be infrequent especially
-              since it is a deprecated mechanism.
+              The detection score for this group of sub-techniques is assessed as Minimal
+              due to the accuracy component of the score.  The registry keys which are
+              modified as a result of these sub-techniques can change frequently or are 
+              too numerous to monitor and therefore can result in significant amount of false positives.
+  - id: T1574
+    name: Hijack Execution Flow
+    technique-scores:
+      - category: Detect
+        value: Minimal
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1574.006
+            name: LD_PRELOAD
+        scores:
+          - category: Detect
+            value: Partial
+  - id: T1137
+    name: Office Application Startup
+    technique-scores:
+      - category: Detect
+        value: Minimal
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1137.002
+            name: Office Test
+        scores:
+          - category: Detect
+            value: Significant
+  - id: T1548
+    name: Abuse Elevation Control Mechanism
+    technique-scores:
+      - category: Detect
+        value: Minimum
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1548.002
+            name: Bypass User Account Control
+        scores:
+          - category: Detect
+            value: Minimum
+      - sub-techniques:
+          - id: T1548.003
+            name: Sudo and Sudo Caching
+        scores:
+          - category: Detect
+            value: Significant
+  - id: T1036
+    name: Masquerading
+    technique-scores:
+      - category: Detect
+        value: Minimal
+    sub-techniques-scores:
+      - sub-techniques:
+          - id: T1036.005
+            name: Match Legitimate Name or Location
+        scores:
+          - category: Detect
+            value: Minimal
 comments: >
-    Although this control is capable of reliably detecting changes to sensitive
-    resources that can be indicative of an attack, it does not include any 
-    intelligence that would minimize false positives and consequently most of 
-    its detection score has been limited to Minimal or Partial.
+    These techniques included in this mapping result in Windows Registry or file system artifacts
+    being created or modified which can be detected by this control.  
+    
+    The detection score for most techniques included in this mapping was scored as Significant 
+    and where there are exceptions, comments have been provided. This Significant score assessment 
+    was due to the following factors:
+    Coverage - (High) The control was able to detect most of the sub-techniques, references and
+    procedure examples of the mapped techniques.
+    Accuracy - (High) Although this control does not include built-in intelligence to minimize 
+    the false positive rate, the specific artifacts generated by the techniques in this mapping 
+    do not change frequently and therefore the potential for a high false-positive is reduced. 
+    Temporal - (Medium) This control at worst scans for changes on an hourly basis.
 references:
   - https://docs.microsoft.com/en-us/azure/security-center/security-center-file-integrity-monitoring
